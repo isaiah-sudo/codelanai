@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+        body {
+            background: #0f0f18;
+            color: #eee;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        #game-container {
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #2e2e4a;
+        }
+        canvas {
+            display: block;
+            background: #181824;
+            image-rendering: pixelated;
+        }
+        .header {
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #8888aa;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .badge {
+            background: #5b21b6;
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 11px;
+            margin-left: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        🎮 <span>Flappy</span> <span class="badge">CodeLan</span>
+    </div>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+    </div>
+
+    <script>
+
+// --- CodeLan Web Audio Synthesizer ---
+let _audioCtx = null;
+function _getAudioContext() {
+    if (!_audioCtx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) _audioCtx = new AudioCtx();
+    }
+    if (_audioCtx && _audioCtx.state === 'suspended') {
+        _audioCtx.resume();
+    }
+    return _audioCtx;
+}
+
+function sound(name) {
+    const ctx = _getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    name = String(name).toLowerCase().trim();
+
+    if (name === "laser" || name === "shoot") {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.exponentialRampToValueAtTime(110, now + 0.15);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.15);
+    } else if (name === "jump") {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "square";
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(600, now + 0.18);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.18);
+    } else if (name === "coin" || name === "pickup") {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(987.77, now);
+        osc.frequency.setValueAtTime(1318.51, now + 0.08);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+    } else if (name === "hit" || name === "explosion" || name === "boom") {
+        const bufferSize = ctx.sampleRate * 0.25;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+        }
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.3, now);
+        noise.connect(gain);
+        gain.connect(ctx.destination);
+        noise.start(now);
+    } else if (name === "powerup") {
+        [330, 392, 523, 659].forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+            gain.gain.setValueAtTime(0.2, now + idx * 0.07);
+            gain.gain.linearRampToValueAtTime(0.01, now + (idx + 1) * 0.07);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + idx * 0.07);
+            osc.stop(now + (idx + 1) * 0.07);
+        });
+    } else if (name === "gameover") {
+        [440, 370, 311, 220].forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = "sawtooth";
+            osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+            gain.gain.setValueAtTime(0.25, now + idx * 0.12);
+            gain.gain.linearRampToValueAtTime(0.01, now + (idx + 1) * 0.12);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + idx * 0.12);
+            osc.stop(now + (idx + 1) * 0.12);
+        });
+    } else {
+        beep(440, 50);
+    }
+}
+
+function beep(freq = 440, durationMs = 100) {
+    const ctx = _getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.linearRampToValueAtTime(0.01, now + durationMs / 1000);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + durationMs / 1000);
+}
+
+// --- Math & Built-in Utilities ---
+const pi = Math.PI;
+function random(a = 0, b = 1) {
+    if (Number.isInteger(a) && Number.isInteger(b)) {
+        const min = Math.min(a, b);
+        const max = Math.max(a, b);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    return Math.random() * (b - a) + a;
+}
+const rand = random;
+function random_choice(arr) {
+    if (!arr || arr.length === 0) return null;
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+function clamp(val, minVal, maxVal) {
+    return Math.max(minVal, Math.min(maxVal, val));
+}
+function sin(deg) { return Math.sin(deg * Math.PI / 180); }
+function cos(deg) { return Math.cos(deg * Math.PI / 180); }
+function atan2(dy, dx) { return Math.atan2(dy, dx) * 180 / Math.PI; }
+function lerp(a, b, t) { return a + (b - a) * t; }
+function map_range(v, i1, i2, o1, o2) {
+    if (i2 === i1) return o1;
+    return o1 + ((v - i1) / (i2 - i1)) * (o2 - o1);
+}
+function rgb(r, g, b) {
+    const toHex = (n) => Math.max(0, Math.min(255, Math.round(n))).toString(16).padStart(2, '0');
+    return '#' + toHex(r) + toHex(g) + toHex(b);
+}
+function distance(x1, y1, x2, y2) { return Math.hypot(x2 - x1, y2 - y1); }
+function collide_rect(x1, y1, w1, h1, x2, y2, w2, h2) {
+    return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
+}
+function collide_circle(x1, y1, r1, x2, y2, r2) {
+    const dx = x1 - x2, dy = y1 - y2;
+    return (dx * dx + dy * dy) <= ((r1 + r2) * (r1 + r2));
+}
+function collide_point_rect(px, py, rx, ry, rw, rh) {
+    return px >= rx && px <= rx + rw && py >= ry && py <= ry + rh;
+}
+function collide_point_circle(px, py, cx, cy, r) {
+    const dx = px - cx, dy = py - cy;
+    return (dx * dx + dy * dy) <= (r * r);
+}
+function len(item) { return item ? item.length : 0; }
+const length = len;
+function push(arr, item) { arr.push(item); return arr.length; }
+const append = push;
+function pop(arr, idx = -1) { return idx === -1 ? arr.pop() : arr.splice(idx, 1)[0]; }
+function remove(arr, item) {
+    const idx = arr.indexOf(item);
+    if (idx !== -1) { arr.splice(idx, 1); return true; }
+    return false;
+}
+function contains(coll, item) {
+    if (!coll) return false;
+    if (Array.isArray(coll) || typeof coll === 'string') return coll.includes(item);
+    return item in coll;
+}
+function keys(obj) { return Object.keys(obj); }
+function values(obj) { return Object.values(obj); }
+function range(start, end, step = 1) {
+    if (end === undefined) { end = start; start = 0; }
+    const res = [];
+    for (let i = start; i < end; i += step) res.push(i);
+    return res;
+}
+function print(...args) { console.log(...args); }
+
+// Global Game Variables
+let width = 800;
+let height = 600;
+let screen_width = 800;
+let screen_height = 600;
+let delta = 1 / 60;
+let frame = 0;
+let mouse_x = 0;
+let mouse_y = 0;
+let mouse_down_state = false;
+let mouse_clicked_state = false;
+let _current_fill = '#ffffff';
+let _current_stroke = null;
+let _current_stroke_width = 1;
+let _camera_x = 0;
+let _camera_y = 0;
+const _keys_held = new Set();
+const _keys_pressed = new Set();
+
+function window_setup(title = "CodeLan Game", w = 800, h = 600) {
+    document.title = title;
+    width = w;
+    height = h;
+    screen_width = w;
+    screen_height = h;
+    const canvas = document.getElementById('gameCanvas');
+    if (canvas) {
+        canvas.width = w;
+        canvas.height = h;
+    }
+}
+const window_clan = window_setup;
+
+function fps(target) {} // Managed by requestAnimationFrame
+
+function clear(color = "#181824") {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, width, height);
+}
+
+function color(fill = "#ffffff", stroke = null, strokeWidth = 1) {
+    _current_fill = fill;
+    _current_stroke = stroke;
+    _current_stroke_width = strokeWidth;
+}
+const fill = color;
+
+function rect(x, y, w, h, f = null, stroke = null, strokeWidth = null) {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const fillStyle = f || _current_fill;
+    const strokeStyle = stroke || _current_stroke;
+    const sw = strokeWidth || _current_stroke_width;
+
+    ctx.save();
+    ctx.translate(_camera_x, _camera_y);
+    if (fillStyle) {
+        ctx.fillStyle = fillStyle;
+        ctx.fillRect(x, y, w, h);
+    }
+    if (strokeStyle) {
+        ctx.strokeStyle = strokeStyle;
+        ctx.lineWidth = sw;
+        ctx.strokeRect(x, y, w, h);
+    }
+    ctx.restore();
+}
+
+function circle(x, y, r, f = null, stroke = null, strokeWidth = null) {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const fillStyle = f || _current_fill;
+    const strokeStyle = stroke || _current_stroke;
+    const sw = strokeWidth || _current_stroke_width;
+
+    ctx.save();
+    ctx.translate(_camera_x, _camera_y);
+    ctx.beginPath();
+    ctx.arc(x, y, Math.max(0, r), 0, Math.PI * 2);
+    if (fillStyle) {
+        ctx.fillStyle = fillStyle;
+        ctx.fill();
+    }
+    if (strokeStyle) {
+        ctx.strokeStyle = strokeStyle;
+        ctx.lineWidth = sw;
+        ctx.stroke();
+    }
+    ctx.restore();
+}
+
+function oval(x, y, w, h, f = null, stroke = null, strokeWidth = null) {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const fillStyle = f || _current_fill;
+    const strokeStyle = stroke || _current_stroke;
+    const sw = strokeWidth || _current_stroke_width;
+
+    ctx.save();
+    ctx.translate(_camera_x, _camera_y);
+    ctx.beginPath();
+    ctx.ellipse(x + w / 2, y + h / 2, Math.abs(w / 2), Math.abs(h / 2), 0, 0, Math.PI * 2);
+    if (fillStyle) {
+        ctx.fillStyle = fillStyle;
+        ctx.fill();
+    }
+    if (strokeStyle) {
+        ctx.strokeStyle = strokeStyle;
+        ctx.lineWidth = sw;
+        ctx.stroke();
+    }
+    ctx.restore();
+}
+
+function line(x1, y1, x2, y2, c = null, strokeWidth = 1) {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.translate(_camera_x, _camera_y);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = c || _current_fill || '#ffffff';
+    ctx.lineWidth = strokeWidth;
+    ctx.stroke();
+    ctx.restore();
+}
+
+function triangle(x1, y1, x2, y2, x3, y3, f = null, stroke = null) {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.translate(_camera_x, _camera_y);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.lineTo(x3, y3);
+    ctx.closePath();
+    if (f || _current_fill) {
+        ctx.fillStyle = f || _current_fill;
+        ctx.fill();
+    }
+    if (stroke || _current_stroke) {
+        ctx.strokeStyle = stroke || _current_stroke;
+        ctx.stroke();
+    }
+    ctx.restore();
+}
+
+function text(str, x, y, size = 16, c = null, align = "left", font = "Arial") {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.translate(_camera_x, _camera_y);
+    ctx.fillStyle = c || _current_fill || '#ffffff';
+    ctx.font = `${size >= 18 ? 'bold ' : ''}${size}px ${font}`;
+    ctx.textAlign = align;
+    ctx.textBaseline = 'middle';
+    ctx.fillText(String(str), x, y);
+    ctx.restore();
+}
+
+function text_centered(str, x, y, size = 16, c = null) {
+    text(str, x, y, size, c, "center");
+}
+
+function grid(step = 40, col = "#252538") {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 1;
+    for (let x = 0; x < width; x += step) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
+    }
+    for (let y = 0; y < height; y += step) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
+    }
+    ctx.restore();
+}
+
+function camera(cx = 0, cy = 0) {
+    _camera_x = -cx;
+    _camera_y = -cy;
+}
+
+function key(k) { return _keys_held.has(String(k).toLowerCase()); }
+function key_down(k) { return _keys_pressed.has(String(k).toLowerCase()); }
+function mouse_down() { return mouse_down_state; }
+function mouse_clicked() { return mouse_clicked_state; }
+
+
+
+// --- User CodeLan Compiled Code ---
+let bird_x = 100;
+let bird_y = 250;
+let bird_vy = 0;
+let bird_radius = 16;
+let gravity = 0.42;
+let flap_strength = -(7.5);
+let pipes = [];
+let pipe_w = 65;
+let pipe_gap = 145;
+let pipe_speed = 3.2;
+let spawn_timer = 0;
+let score = 0;
+let high_score = 0;
+let game_state = "start";
+function reset_game() {
+    bird_y = 250;
+    bird_vy = 0;
+    pipes = [];
+    spawn_timer = 0;
+    score = 0;
+    game_state = "playing";
+}
+function spawn_pipe() {
+    let top_h = random(70, ((height - pipe_gap) - 100));
+    push(pipes, {"x": (width + 20), "top": top_h, "bottom": (top_h + pipe_gap), "passed": false});
+}
+
+function _setup() {
+    window_clan("CodeLan Flappy Bird", 480, 640);
+    fps(60);
+}
+
+function _update() {
+    if ((game_state === "start")) {
+        bird_y = (250 + (sin((frame * 4)) * 10));
+        if ((key_down("space") || mouse_clicked())) {
+            reset_game();
+            sound("jump");
+        }
+    } else if ((game_state === "playing")) {
+        if ((key_down("space") || mouse_clicked())) {
+            bird_vy = flap_strength;
+            sound("jump");
+        }
+        bird_vy += gravity;
+        bird_y += bird_vy;
+        spawn_timer += delta;
+        if ((spawn_timer >= 1.5)) {
+            spawn_timer = 0;
+            spawn_pipe();
+        }
+        let active_pipes = [];
+        for (let p of pipes) {
+            p.x -= pipe_speed;
+            if ((!(p.passed) && ((p.x + pipe_w) < bird_x))) {
+                p.passed = true;
+                score += 1;
+                if ((score > high_score)) {
+                    high_score = score;
+                }
+                sound("coin");
+            }
+            let hit_top = collide_rect((bird_x - bird_radius), (bird_y - bird_radius), (bird_radius * 2), (bird_radius * 2), p.x, 0, pipe_w, p.top);
+            let hit_bot = collide_rect((bird_x - bird_radius), (bird_y - bird_radius), (bird_radius * 2), (bird_radius * 2), p.x, p.bottom, pipe_w, (height - p.bottom));
+            if ((hit_top || hit_bot)) {
+                game_state = "game_over";
+                sound("hit");
+                sound("gameover");
+            }
+            if ((p.x > (-(pipe_w) - 20))) {
+                push(active_pipes, p);
+            }
+        }
+        pipes = active_pipes;
+        if ((((bird_y + bird_radius) >= (height - 40)) || ((bird_y - bird_radius) <= 0))) {
+            game_state = "game_over";
+            sound("hit");
+            sound("gameover");
+        }
+    } else if ((game_state === "game_over")) {
+        if ((key_down("space") || mouse_clicked())) {
+            reset_game();
+            sound("powerup");
+        }
+    }
+}
+
+function _draw() {
+    clear("#4ec0ca");
+    circle(80, 120, 40, "#ffffff");
+    circle(120, 110, 50, "#ffffff");
+    circle(160, 120, 35, "#ffffff");
+    circle(340, 180, 45, "#ffffff");
+    circle(390, 170, 55, "#ffffff");
+    for (let p of pipes) {
+        rect(p.x, 0, pipe_w, p.top, "#73bf2e", "#558822", 2);
+        rect((p.x - 4), (p.top - 24), (pipe_w + 8), 24, "#73bf2e", "#558822", 2);
+        rect(p.x, p.bottom, pipe_w, ((height - p.bottom) - 40), "#73bf2e", "#558822", 2);
+        rect((p.x - 4), p.bottom, (pipe_w + 8), 24, "#73bf2e", "#558822", 2);
+    }
+    rect(0, (height - 40), width, 40, "#ded895", "#d0c878", 2);
+    rect(0, (height - 40), width, 8, "#73bf2e");
+    circle(bird_x, bird_y, bird_radius, "#f7d02c", "#c99a00", 2);
+    circle((bird_x + 6), (bird_y - 4), 4, "#ffffff");
+    circle((bird_x + 8), (bird_y - 4), 2, "#000000");
+    triangle(((bird_x + bird_radius) - 2), (bird_y - 2), ((bird_x + bird_radius) + 9), (bird_y + 3), ((bird_x + bird_radius) - 2), (bird_y + 7), "#f4511e");
+    circle((bird_x - 6), (bird_y + 2), 7, "#ffffff");
+    if ((game_state === "playing")) {
+        text_centered(score, (width / 2), 60, 42, "#ffffff");
+    }
+    if ((game_state === "start")) {
+        rect(50, 200, (width - 100), 180, "#1c2333", "#4ec0ca", 2);
+        text_centered("FLAPPY CODELAN", (width / 2), 245, 26, "#f7d02c");
+        text_centered("Press SPACE or CLICK to Flap", (width / 2), 310, 16, "#ffffff");
+    }
+    if ((game_state === "game_over")) {
+        rect(50, 200, (width - 100), 220, "#1c2333", "#ff3355", 2);
+        text_centered("GAME OVER", (width / 2), 245, 30, "#ff3355");
+        text_centered(("Score: " + score), (width / 2), 290, 20, "#ffffff");
+        text_centered(("Best: " + high_score), (width / 2), 330, 18, "#ffdd00");
+        text_centered("Press SPACE to Play Again", (width / 2), 380, 15, "#aaaaaa");
+    }
+}
+
+
+
+
+// --- Runner and Event Listeners ---
+window.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('gameCanvas');
+
+    // Key normalizer
+    const mapKey = (k) => {
+        k = k.toLowerCase();
+        if (k === 'arrowleft') return 'left';
+        if (k === 'arrowright') return 'right';
+        if (k === 'arrowup') return 'up';
+        if (k === 'arrowdown') return 'down';
+        if (k === ' ') return 'space';
+        return k;
+    };
+
+    window.addEventListener('keydown', (e) => {
+        _getAudioContext();
+        const k = mapKey(e.key);
+        if (!_keys_held.has(k)) {
+            _keys_pressed.add(k);
+            if (typeof _on_key_down === 'function') _on_key_down(k);
+        }
+        _keys_held.add(k);
+        if (['space', 'left', 'right', 'up', 'down'].includes(k)) {
+            e.preventDefault();
+        }
+    });
+
+    window.addEventListener('keyup', (e) => {
+        const k = mapKey(e.key);
+        _keys_held.delete(k);
+        if (typeof _on_key_up === 'function') _on_key_up(k);
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouse_x = e.clientX - rect.left;
+        mouse_y = e.clientY - rect.top;
+    });
+
+    canvas.addEventListener('mousedown', (e) => {
+        _getAudioContext();
+        const rect = canvas.getBoundingClientRect();
+        mouse_x = e.clientX - rect.left;
+        mouse_y = e.clientY - rect.top;
+        mouse_down_state = true;
+        mouse_clicked_state = true;
+        if (typeof _on_mouse_down === 'function') _on_mouse_down('left');
+    });
+
+    window.addEventListener('mouseup', (e) => {
+        mouse_down_state = false;
+        if (typeof _on_mouse_up === 'function') _on_mouse_up('left');
+    });
+
+    // Initialize setup
+    if (typeof _setup === 'function') {
+        _setup();
+    }
+
+    let lastTime = performance.now();
+    function gameLoop(now) {
+        delta = Math.min((now - lastTime) / 1000, 0.1);
+        lastTime = now;
+        frame++;
+
+        if (typeof _update === 'function') {
+            _update();
+        }
+        if (typeof _draw === 'function') {
+            _draw();
+        }
+
+        _keys_pressed.clear();
+        mouse_clicked_state = false;
+        requestAnimationFrame(gameLoop);
+    }
+
+    requestAnimationFrame(gameLoop);
+});
+    </script>
+</body>
+</html>

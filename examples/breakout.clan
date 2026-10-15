@@ -1,0 +1,208 @@
+// ============================================
+// CodeLan Example: Breakout / Brick Breaker
+// Controls: Mouse or Left/Right/A/D to move paddle
+// Space to launch / restart
+// ============================================
+
+let paddle_w = 110
+let paddle_h = 16
+let paddle_x = 345
+let paddle_y = 550
+let paddle_speed = 9
+
+let ball_x = 400
+let ball_y = 530
+let ball_r = 8
+let ball_vx = 4
+let ball_vy = -5
+let ball_attached = true
+
+let bricks = []
+let brick_cols = 10
+let brick_rows = 5
+let brick_w = 70
+let brick_h = 24
+let brick_pad = 8
+let brick_offset_x = 15
+let brick_offset_y = 60
+
+let score = 0
+let lives = 3
+let game_state = "playing" // "playing", "win", "game_over"
+
+let row_colors = [
+    "#ef4444", // Red
+    "#f97316", // Orange
+    "#eab308", // Yellow
+    "#22c55e", // Green
+    "#3b82f6"  // Blue
+]
+
+fn init_bricks() {
+    bricks = []
+    let r = 0
+    while (r < brick_rows) {
+        let c = 0
+        while (c < brick_cols) {
+            let bx = brick_offset_x + c * (brick_w + brick_pad)
+            let by = brick_offset_y + r * (brick_h + brick_pad)
+            push(bricks, {
+                x: bx,
+                y: by,
+                color: row_colors[r],
+                points: (brick_rows - r) * 10,
+                alive: true
+            })
+            c += 1
+        }
+        r += 1
+    }
+}
+
+fn reset_ball() {
+    ball_attached = true
+    ball_vx = random_choice([-4, 4])
+    ball_vy = -5
+}
+
+setup {
+    window("CodeLan Breakout", 800, 600)
+    fps(60)
+    init_bricks()
+    reset_ball()
+}
+
+update {
+    if (game_state == "playing") {
+        // Paddle movement: follow mouse or keyboard
+        if (mouse_x > 0 and mouse_x < width) {
+            paddle_x = mouse_x - paddle_w / 2
+        }
+        if (key("left") or key("a")) {
+            paddle_x -= paddle_speed
+        }
+        if (key("right") or key("d")) {
+            paddle_x += paddle_speed
+        }
+        paddle_x = clamp(paddle_x, 10, width - paddle_w - 10)
+
+        // Launch ball
+        if (ball_attached) {
+            ball_x = paddle_x + paddle_w / 2
+            ball_y = paddle_y - ball_r - 2
+            if (key_down("space") or mouse_clicked()) {
+                ball_attached = false
+                sound("jump")
+            }
+        } else {
+            // Ball movement
+            ball_x += ball_vx
+            ball_y += ball_vy
+
+            // Wall collisions
+            if (ball_x - ball_r <= 0) {
+                ball_x = ball_r
+                ball_vx = -ball_vx
+                sound("hit")
+            }
+            if (ball_x + ball_r >= width) {
+                ball_x = width - ball_r
+                ball_vx = -ball_vx
+                sound("hit")
+            }
+            if (ball_y - ball_r <= 0) {
+                ball_y = ball_r
+                ball_vy = -ball_vy
+                sound("hit")
+            }
+
+            // Paddle collision
+            if (ball_vy > 0 and collide_rect(paddle_x, paddle_y, paddle_w, paddle_h, ball_x - ball_r, ball_y - ball_r, ball_r * 2, ball_r * 2)) {
+                ball_vy = -abs(ball_vy)
+                let hit_offset = (ball_x - (paddle_x + paddle_w / 2)) / (paddle_w / 2)
+                ball_vx = hit_offset * 7.5
+                sound("laser")
+            }
+
+            // Brick collisions
+            let remaining_bricks = 0
+            for (b in bricks) {
+                if (b.alive) {
+                    remaining_bricks += 1
+                    if (collide_rect(b.x, b.y, brick_w, brick_h, ball_x - ball_r, ball_y - ball_r, ball_r * 2, ball_r * 2)) {
+                        b.alive = false
+                        score += b.points
+                        ball_vy = -ball_vy
+                        sound("coin")
+                        break
+                    }
+                }
+            }
+
+            // Win condition
+            if (remaining_bricks == 0) {
+                game_state = "win"
+                sound("powerup")
+            }
+
+            // Bottom out
+            if (ball_y > height + 20) {
+                lives -= 1
+                sound("hit")
+                if (lives <= 0) {
+                    game_state = "game_over"
+                    sound("gameover")
+                } else {
+                    reset_ball()
+                }
+            }
+        }
+    } else {
+        if (key("space")) {
+            score = 0
+            lives = 3
+            game_state = "playing"
+            init_bricks()
+            reset_ball()
+        }
+    }
+}
+
+draw {
+    clear("#0c0d14")
+
+    // Draw Bricks
+    for (b in bricks) {
+        if (b.alive) {
+            rect(b.x, b.y, brick_w, brick_h, b.color, "#ffffff", 1)
+        }
+    }
+
+    // Draw Paddle
+    rect(paddle_x, paddle_y, paddle_w, paddle_h, "#38bdf8", "#ffffff", 1)
+
+    // Draw Ball
+    circle(ball_x, ball_y, ball_r, "#facc15")
+
+    // HUD
+    text("SCORE: " + score, 20, 25, 18, "#38bdf8")
+    text("LIVES: " + lives, width - 20, 25, 18, "#ef4444", "right")
+
+    if (ball_attached and game_state == "playing") {
+        text_centered("Press SPACE or CLICK to Launch Ball", width / 2, 420, 16, "#94a3b8")
+    }
+
+    if (game_state == "win") {
+        rect(180, 220, 440, 180, "#1e293b", "#22c55e", 2)
+        text_centered("YOU WIN!", width / 2, 275, 36, "#22c55e")
+        text_centered("Final Score: " + score, width / 2, 325, 20, "#facc15")
+        text_centered("Press SPACE to Play Again", width / 2, 365, 15, "#ffffff")
+    }
+
+    if (game_state == "game_over") {
+        rect(180, 220, 440, 180, "#1e293b", "#ef4444", 2)
+        text_centered("GAME OVER", width / 2, 275, 36, "#ef4444")
+        text_centered("Score: " + score, width / 2, 325, 20, "#facc15")
+        text_centered("Press SPACE to Restart", width / 2, 365, 15, "#ffffff")
+    }
+}

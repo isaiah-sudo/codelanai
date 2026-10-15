@@ -1,0 +1,172 @@
+// ============================================
+// CodeLan Example: Flappy Bird
+// Controls: Space or Click to flap
+// ============================================
+
+let bird_x = 100
+let bird_y = 250
+let bird_vy = 0
+let bird_radius = 16
+let gravity = 0.42
+let flap_strength = -7.5
+
+let pipes = []
+let pipe_w = 65
+let pipe_gap = 145
+let pipe_speed = 3.2
+let spawn_timer = 0
+
+let score = 0
+let high_score = 0
+let game_state = "start" // "start", "playing", "game_over"
+
+fn reset_game() {
+    bird_y = 250
+    bird_vy = 0
+    pipes = []
+    spawn_timer = 0
+    score = 0
+    game_state = "playing"
+}
+
+fn spawn_pipe() {
+    let top_h = random(70, height - pipe_gap - 100)
+    push(pipes, {
+        x: width + 20,
+        top: top_h,
+        bottom: top_h + pipe_gap,
+        passed: false
+    })
+}
+
+setup {
+    window("CodeLan Flappy Bird", 480, 640)
+    fps(60)
+}
+
+update {
+    if (game_state == "start") {
+        bird_y = 250 + sin(frame * 4) * 10
+        if (key_down("space") or mouse_clicked()) {
+            reset_game()
+            sound("jump")
+        }
+    } else if (game_state == "playing") {
+        // Flap
+        if (key_down("space") or mouse_clicked()) {
+            bird_vy = flap_strength
+            sound("jump")
+        }
+
+        // Apply physics
+        bird_vy += gravity
+        bird_y += bird_vy
+
+        // Spawn pipes
+        spawn_timer += delta
+        if (spawn_timer >= 1.5) {
+            spawn_timer = 0
+            spawn_pipe()
+        }
+
+        // Move pipes
+        let active_pipes = []
+        for (p in pipes) {
+            p.x -= pipe_speed
+
+            // Score point when passing pipe
+            if (not p.passed and p.x + pipe_w < bird_x) {
+                p.passed = true
+                score += 1
+                if (score > high_score) {
+                    high_score = score
+                }
+                sound("coin")
+            }
+
+            // Collisions with top or bottom pipe
+            let hit_top = collide_rect(bird_x - bird_radius, bird_y - bird_radius, bird_radius * 2, bird_radius * 2, p.x, 0, pipe_w, p.top)
+            let hit_bot = collide_rect(bird_x - bird_radius, bird_y - bird_radius, bird_radius * 2, bird_radius * 2, p.x, p.bottom, pipe_w, height - p.bottom)
+
+            if (hit_top or hit_bot) {
+                game_state = "game_over"
+                sound("hit")
+                sound("gameover")
+            }
+
+            if (p.x > -pipe_w - 20) {
+                push(active_pipes, p)
+            }
+        }
+        pipes = active_pipes
+
+        // Ground and ceiling collision
+        if (bird_y + bird_radius >= height - 40 or bird_y - bird_radius <= 0) {
+            game_state = "game_over"
+            sound("hit")
+            sound("gameover")
+        }
+    } else if (game_state == "game_over") {
+        if (key_down("space") or mouse_clicked()) {
+            reset_game()
+            sound("powerup")
+        }
+    }
+}
+
+draw {
+    // Sky background
+    clear("#4ec0ca")
+
+    // Background clouds
+    circle(80, 120, 40, "#ffffff")
+    circle(120, 110, 50, "#ffffff")
+    circle(160, 120, 35, "#ffffff")
+
+    circle(340, 180, 45, "#ffffff")
+    circle(390, 170, 55, "#ffffff")
+
+    // Pipes
+    for (p in pipes) {
+        // Top pipe
+        rect(p.x, 0, pipe_w, p.top, "#73bf2e", "#558822", 2)
+        rect(p.x - 4, p.top - 24, pipe_w + 8, 24, "#73bf2e", "#558822", 2)
+
+        // Bottom pipe
+        rect(p.x, p.bottom, pipe_w, height - p.bottom - 40, "#73bf2e", "#558822", 2)
+        rect(p.x - 4, p.bottom, pipe_w + 8, 24, "#73bf2e", "#558822", 2)
+    }
+
+    // Ground
+    rect(0, height - 40, width, 40, "#ded895", "#d0c878", 2)
+    rect(0, height - 40, width, 8, "#73bf2e")
+
+    // Bird
+    circle(bird_x, bird_y, bird_radius, "#f7d02c", "#c99a00", 2)
+    // Eye
+    circle(bird_x + 6, bird_y - 4, 4, "#ffffff")
+    circle(bird_x + 8, bird_y - 4, 2, "#000000")
+    // Beak
+    triangle(bird_x + bird_radius - 2, bird_y - 2, bird_x + bird_radius + 9, bird_y + 3, bird_x + bird_radius - 2, bird_y + 7, "#f4511e")
+    // Wing
+    circle(bird_x - 6, bird_y + 2, 7, "#ffffff")
+
+    // Score HUD
+    if (game_state == "playing") {
+        text_centered(score, width / 2, 60, 42, "#ffffff")
+    }
+
+    if (game_state == "start") {
+        rect(50, 200, width - 100, 180, "#1c2333", "#4ec0ca", 2)
+        text_centered("FLAPPY CODELAN", width / 2, 245, 26, "#f7d02c")
+        text_centered("Press SPACE or CLICK to Flap", width / 2, 310, 16, "#ffffff")
+    }
+
+    if (game_state == "game_over") {
+        rect(50, 200, width - 100, 220, "#1c2333", "#ff3355", 2)
+        text_centered("GAME OVER", width / 2, 245, 30, "#ff3355")
+        text_centered("Score: " + score, width / 2, 290, 20, "#ffffff")
+        text_centered("Best: " + high_score, width / 2, 330, 18, "#ffdd00")
+        text_centered("Press SPACE to Play Again", width / 2, 380, 15, "#aaaaaa")
+    }
+}

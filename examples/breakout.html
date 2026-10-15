@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breakout</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+        body {
+            background: #0f0f18;
+            color: #eee;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        #game-container {
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #2e2e4a;
+        }
+        canvas {
+            display: block;
+            background: #181824;
+            image-rendering: pixelated;
+        }
+        .header {
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #8888aa;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .badge {
+            background: #5b21b6;
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 11px;
+            margin-left: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        🎮 <span>Breakout</span> <span class="badge">CodeLan</span>
+    </div>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+    </div>
+
+    <script>
+
+// --- CodeLan Web Audio Synthesizer ---
+let _audioCtx = null;
+function _getAudioContext() {
+    if (!_audioCtx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) _audioCtx = new AudioCtx();
+    }
+    if (_audioCtx && _audioCtx.state === 'suspended') {
+        _audioCtx.resume();
+    }
+    return _audioCtx;
+}
+
+function sound(name) {
+    const ctx = _getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    name = String(name).toLowerCase().trim();
+
+    if (name === "laser" || name === "shoot") {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.exponentialRampToValueAtTime(110, now + 0.15);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.15);
+    } else if (name === "jump") {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "square";
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(600, now + 0.18);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.18);
+    } else if (name === "coin" || name === "pickup") {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(987.77, now);
+        osc.frequency.setValueAtTime(1318.51, now + 0.08);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+    } else if (name === "hit" || name === "explosion" || name === "boom") {
+        const bufferSize = ctx.sampleRate * 0.25;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+        }
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.3, now);
+        noise.connect(gain);
+        gain.connect(ctx.destination);
+        noise.start(now);
+    } else if (name === "powerup") {
+        [330, 392, 523, 659].forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+            gain.gain.setValueAtTime(0.2, now + idx * 0.07);
+            gain.gain.linearRampToValueAtTime(0.01, now + (idx + 1) * 0.07);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + idx * 0.07);
+            osc.stop(now + (idx + 1) * 0.07);
+        });
+    } else if (name === "gameover") {
+        [440, 370, 311, 220].forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = "sawtooth";
+            osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+            gain.gain.setValueAtTime(0.25, now + idx * 0.12);
+            gain.gain.linearRampToValueAtTime(0.01, now + (idx + 1) * 0.12);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + idx * 0.12);
+            osc.stop(now + (idx + 1) * 0.12);
+        });
+    } else {
+        beep(440, 50);
+    }
+}
+
+function beep(freq = 440, durationMs = 100) {
+    const ctx = _getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.linearRampToValueAtTime(0.01, now + durationMs / 1000);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + durationMs / 1000);
+}
+
+// --- Math & Built-in Utilities ---
+const pi = Math.PI;
+function random(a = 0, b = 1) {
+    if (Number.isInteger(a) && Number.isInteger(b)) {
+        const min = Math.min(a, b);
+        const max = Math.max(a, b);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    return Math.random() * (b - a) + a;
+}
+const rand = random;
+function random_choice(arr) {
+    if (!arr || arr.length === 0) return null;
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+function clamp(val, minVal, maxVal) {
+    return Math.max(minVal, Math.min(maxVal, val));
+}
+function sin(deg) { return Math.sin(deg * Math.PI / 180); }
+function cos(deg) { return Math.cos(deg * Math.PI / 180); }
+function atan2(dy, dx) { return Math.atan2(dy, dx) * 180 / Math.PI; }
+function lerp(a, b, t) { return a + (b - a) * t; }
+function map_range(v, i1, i2, o1, o2) {
+    if (i2 === i1) return o1;
+    return o1 + ((v - i1) / (i2 - i1)) * (o2 - o1);
+}
+function rgb(r, g, b) {
+    const toHex = (n) => Math.max(0, Math.min(255, Math.round(n))).toString(16).padStart(2, '0');
+    return '#' + toHex(r) + toHex(g) + toHex(b);
+}
+function distance(x1, y1, x2, y2) { return Math.hypot(x2 - x1, y2 - y1); }
+function collide_rect(x1, y1, w1, h1, x2, y2, w2, h2) {
+    return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
+}
+function collide_circle(x1, y1, r1, x2, y2, r2) {
+    const dx = x1 - x2, dy = y1 - y2;
+    return (dx * dx + dy * dy) <= ((r1 + r2) * (r1 + r2));
+}
+function collide_point_rect(px, py, rx, ry, rw, rh) {
+    return px >= rx && px <= rx + rw && py >= ry && py <= ry + rh;
+}
+function collide_point_circle(px, py, cx, cy, r) {
+    const dx = px - cx, dy = py - cy;
+    return (dx * dx + dy * dy) <= (r * r);
+}
+function len(item) { return item ? item.length : 0; }
+const length = len;
+function push(arr, item) { arr.push(item); return arr.length; }
+const append = push;
+function pop(arr, idx = -1) { return idx === -1 ? arr.pop() : arr.splice(idx, 1)[0]; }
+function remove(arr, item) {
+    const idx = arr.indexOf(item);
+    if (idx !== -1) { arr.splice(idx, 1); return true; }
+    return false;
+}
+function contains(coll, item) {
+    if (!coll) return false;
+    if (Array.isArray(coll) || typeof coll === 'string') return coll.includes(item);
+    return item in coll;
+}
+function keys(obj) { return Object.keys(obj); }
+function values(obj) { return Object.values(obj); }
+function range(start, end, step = 1) {
+    if (end === undefined) { end = start; start = 0; }
+    const res = [];
+    for (let i = start; i < end; i += step) res.push(i);
+    return res;
+}
+function print(...args) { console.log(...args); }
+
+// Global Game Variables
+let width = 800;
+let height = 600;
+let screen_width = 800;
+let screen_height = 600;
+let delta = 1 / 60;
+let frame = 0;
+let mouse_x = 0;
+let mouse_y = 0;
+let mouse_down_state = false;
+let mouse_clicked_state = false;
+let _current_fill = '#ffffff';
+let _current_stroke = null;
+let _current_stroke_width = 1;
+let _camera_x = 0;
+let _camera_y = 0;
+const _keys_held = new Set();
+const _keys_pressed = new Set();
+
+function window_setup(title = "CodeLan Game", w = 800, h = 600) {
+    document.title = title;
+    width = w;
+    height = h;
+    screen_width = w;
+    screen_height = h;
+    const canvas = document.getElementById('gameCanvas');
+    if (canvas) {
+        canvas.width = w;
+        canvas.height = h;
+    }
+}
+const window_clan = window_setup;
+
+function fps(target) {} // Managed by requestAnimationFrame
+
+function clear(color = "#181824") {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, width, height);
+}
+
+function color(fill = "#ffffff", stroke = null, strokeWidth = 1) {
+    _current_fill = fill;
+    _current_stroke = stroke;
+    _current_stroke_width = strokeWidth;
+}
+const fill = color;
+
+function rect(x, y, w, h, f = null, stroke = null, strokeWidth = null) {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const fillStyle = f || _current_fill;
+    const strokeStyle = stroke || _current_stroke;
+    const sw = strokeWidth || _current_stroke_width;
+
+    ctx.save();
+    ctx.translate(_camera_x, _camera_y);
+    if (fillStyle) {
+        ctx.fillStyle = fillStyle;
+        ctx.fillRect(x, y, w, h);
+    }
+    if (strokeStyle) {
+        ctx.strokeStyle = strokeStyle;
+        ctx.lineWidth = sw;
+        ctx.strokeRect(x, y, w, h);
+    }
+    ctx.restore();
+}
+
+function circle(x, y, r, f = null, stroke = null, strokeWidth = null) {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const fillStyle = f || _current_fill;
+    const strokeStyle = stroke || _current_stroke;
+    const sw = strokeWidth || _current_stroke_width;
+
+    ctx.save();
+    ctx.translate(_camera_x, _camera_y);
+    ctx.beginPath();
+    ctx.arc(x, y, Math.max(0, r), 0, Math.PI * 2);
+    if (fillStyle) {
+        ctx.fillStyle = fillStyle;
+        ctx.fill();
+    }
+    if (strokeStyle) {
+        ctx.strokeStyle = strokeStyle;
+        ctx.lineWidth = sw;
+        ctx.stroke();
+    }
+    ctx.restore();
+}
+
+function oval(x, y, w, h, f = null, stroke = null, strokeWidth = null) {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const fillStyle = f || _current_fill;
+    const strokeStyle = stroke || _current_stroke;
+    const sw = strokeWidth || _current_stroke_width;
+
+    ctx.save();
+    ctx.translate(_camera_x, _camera_y);
+    ctx.beginPath();
+    ctx.ellipse(x + w / 2, y + h / 2, Math.abs(w / 2), Math.abs(h / 2), 0, 0, Math.PI * 2);
+    if (fillStyle) {
+        ctx.fillStyle = fillStyle;
+        ctx.fill();
+    }
+    if (strokeStyle) {
+        ctx.strokeStyle = strokeStyle;
+        ctx.lineWidth = sw;
+        ctx.stroke();
+    }
+    ctx.restore();
+}
+
+function line(x1, y1, x2, y2, c = null, strokeWidth = 1) {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.translate(_camera_x, _camera_y);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = c || _current_fill || '#ffffff';
+    ctx.lineWidth = strokeWidth;
+    ctx.stroke();
+    ctx.restore();
+}
+
+function triangle(x1, y1, x2, y2, x3, y3, f = null, stroke = null) {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.translate(_camera_x, _camera_y);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.lineTo(x3, y3);
+    ctx.closePath();
+    if (f || _current_fill) {
+        ctx.fillStyle = f || _current_fill;
+        ctx.fill();
+    }
+    if (stroke || _current_stroke) {
+        ctx.strokeStyle = stroke || _current_stroke;
+        ctx.stroke();
+    }
+    ctx.restore();
+}
+
+function text(str, x, y, size = 16, c = null, align = "left", font = "Arial") {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.translate(_camera_x, _camera_y);
+    ctx.fillStyle = c || _current_fill || '#ffffff';
+    ctx.font = `${size >= 18 ? 'bold ' : ''}${size}px ${font}`;
+    ctx.textAlign = align;
+    ctx.textBaseline = 'middle';
+    ctx.fillText(String(str), x, y);
+    ctx.restore();
+}
+
+function text_centered(str, x, y, size = 16, c = null) {
+    text(str, x, y, size, c, "center");
+}
+
+function grid(step = 40, col = "#252538") {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 1;
+    for (let x = 0; x < width; x += step) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
+    }
+    for (let y = 0; y < height; y += step) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
+    }
+    ctx.restore();
+}
+
+function camera(cx = 0, cy = 0) {
+    _camera_x = -cx;
+    _camera_y = -cy;
+}
+
+function key(k) { return _keys_held.has(String(k).toLowerCase()); }
+function key_down(k) { return _keys_pressed.has(String(k).toLowerCase()); }
+function mouse_down() { return mouse_down_state; }
+function mouse_clicked() { return mouse_clicked_state; }
+
+
+
+// --- User CodeLan Compiled Code ---
+let paddle_w = 110;
+let paddle_h = 16;
+let paddle_x = 345;
+let paddle_y = 550;
+let paddle_speed = 9;
+let ball_x = 400;
+let ball_y = 530;
+let ball_r = 8;
+let ball_vx = 4;
+let ball_vy = -(5);
+let ball_attached = true;
+let bricks = [];
+let brick_cols = 10;
+let brick_rows = 5;
+let brick_w = 70;
+let brick_h = 24;
+let brick_pad = 8;
+let brick_offset_x = 15;
+let brick_offset_y = 60;
+let score = 0;
+let lives = 3;
+let game_state = "playing";
+let row_colors = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#3b82f6"];
+function init_bricks() {
+    bricks = [];
+    let r = 0;
+    while ((r < brick_rows)) {
+        let c = 0;
+        while ((c < brick_cols)) {
+            let bx = (brick_offset_x + (c * (brick_w + brick_pad)));
+            let by = (brick_offset_y + (r * (brick_h + brick_pad)));
+            push(bricks, {"x": bx, "y": by, "color": row_colors[r], "points": ((brick_rows - r) * 10), "alive": true});
+            c += 1;
+        }
+        r += 1;
+    }
+}
+function reset_ball() {
+    ball_attached = true;
+    ball_vx = random_choice([-(4), 4]);
+    ball_vy = -(5);
+}
+
+function _setup() {
+    window_clan("CodeLan Breakout", 800, 600);
+    fps(60);
+    init_bricks();
+    reset_ball();
+}
+
+function _update() {
+    if ((game_state === "playing")) {
+        if (((mouse_x > 0) && (mouse_x < width))) {
+            paddle_x = (mouse_x - (paddle_w / 2));
+        }
+        if ((key("left") || key("a"))) {
+            paddle_x -= paddle_speed;
+        }
+        if ((key("right") || key("d"))) {
+            paddle_x += paddle_speed;
+        }
+        paddle_x = clamp(paddle_x, 10, ((width - paddle_w) - 10));
+        if (ball_attached) {
+            ball_x = (paddle_x + (paddle_w / 2));
+            ball_y = ((paddle_y - ball_r) - 2);
+            if ((key_down("space") || mouse_clicked())) {
+                ball_attached = false;
+                sound("jump");
+            }
+        } else {
+            ball_x += ball_vx;
+            ball_y += ball_vy;
+            if (((ball_x - ball_r) <= 0)) {
+                ball_x = ball_r;
+                ball_vx = -(ball_vx);
+                sound("hit");
+            }
+            if (((ball_x + ball_r) >= width)) {
+                ball_x = (width - ball_r);
+                ball_vx = -(ball_vx);
+                sound("hit");
+            }
+            if (((ball_y - ball_r) <= 0)) {
+                ball_y = ball_r;
+                ball_vy = -(ball_vy);
+                sound("hit");
+            }
+            if (((ball_vy > 0) && collide_rect(paddle_x, paddle_y, paddle_w, paddle_h, (ball_x - ball_r), (ball_y - ball_r), (ball_r * 2), (ball_r * 2)))) {
+                ball_vy = -(abs(ball_vy));
+                let hit_offset = ((ball_x - (paddle_x + (paddle_w / 2))) / (paddle_w / 2));
+                ball_vx = (hit_offset * 7.5);
+                sound("laser");
+            }
+            let remaining_bricks = 0;
+            for (let b of bricks) {
+                if (b.alive) {
+                    remaining_bricks += 1;
+                    if (collide_rect(b.x, b.y, brick_w, brick_h, (ball_x - ball_r), (ball_y - ball_r), (ball_r * 2), (ball_r * 2))) {
+                        b.alive = false;
+                        score += b.points;
+                        ball_vy = -(ball_vy);
+                        sound("coin");
+                        break;
+                    }
+                }
+            }
+            if ((remaining_bricks === 0)) {
+                game_state = "win";
+                sound("powerup");
+            }
+            if ((ball_y > (height + 20))) {
+                lives -= 1;
+                sound("hit");
+                if ((lives <= 0)) {
+                    game_state = "game_over";
+                    sound("gameover");
+                } else {
+                    reset_ball();
+                }
+            }
+        }
+    } else {
+        if (key("space")) {
+            score = 0;
+            lives = 3;
+            game_state = "playing";
+            init_bricks();
+            reset_ball();
+        }
+    }
+}
+
+function _draw() {
+    clear("#0c0d14");
+    for (let b of bricks) {
+        if (b.alive) {
+            rect(b.x, b.y, brick_w, brick_h, b.color, "#ffffff", 1);
+        }
+    }
+    rect(paddle_x, paddle_y, paddle_w, paddle_h, "#38bdf8", "#ffffff", 1);
+    circle(ball_x, ball_y, ball_r, "#facc15");
+    text(("SCORE: " + score), 20, 25, 18, "#38bdf8");
+    text(("LIVES: " + lives), (width - 20), 25, 18, "#ef4444", "right");
+    if ((ball_attached && (game_state === "playing"))) {
+        text_centered("Press SPACE or CLICK to Launch Ball", (width / 2), 420, 16, "#94a3b8");
+    }
+    if ((game_state === "win")) {
+        rect(180, 220, 440, 180, "#1e293b", "#22c55e", 2);
+        text_centered("YOU WIN!", (width / 2), 275, 36, "#22c55e");
+        text_centered(("Final Score: " + score), (width / 2), 325, 20, "#facc15");
+        text_centered("Press SPACE to Play Again", (width / 2), 365, 15, "#ffffff");
+    }
+    if ((game_state === "game_over")) {
+        rect(180, 220, 440, 180, "#1e293b", "#ef4444", 2);
+        text_centered("GAME OVER", (width / 2), 275, 36, "#ef4444");
+        text_centered(("Score: " + score), (width / 2), 325, 20, "#facc15");
+        text_centered("Press SPACE to Restart", (width / 2), 365, 15, "#ffffff");
+    }
+}
+
+
+
+
+// --- Runner and Event Listeners ---
+window.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('gameCanvas');
+
+    // Key normalizer
+    const mapKey = (k) => {
+        k = k.toLowerCase();
+        if (k === 'arrowleft') return 'left';
+        if (k === 'arrowright') return 'right';
+        if (k === 'arrowup') return 'up';
+        if (k === 'arrowdown') return 'down';
+        if (k === ' ') return 'space';
+        return k;
+    };
+
+    window.addEventListener('keydown', (e) => {
+        _getAudioContext();
+        const k = mapKey(e.key);
+        if (!_keys_held.has(k)) {
+            _keys_pressed.add(k);
+            if (typeof _on_key_down === 'function') _on_key_down(k);
+        }
+        _keys_held.add(k);
+        if (['space', 'left', 'right', 'up', 'down'].includes(k)) {
+            e.preventDefault();
+        }
+    });
+
+    window.addEventListener('keyup', (e) => {
+        const k = mapKey(e.key);
+        _keys_held.delete(k);
+        if (typeof _on_key_up === 'function') _on_key_up(k);
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouse_x = e.clientX - rect.left;
+        mouse_y = e.clientY - rect.top;
+    });
+
+    canvas.addEventListener('mousedown', (e) => {
+        _getAudioContext();
+        const rect = canvas.getBoundingClientRect();
+        mouse_x = e.clientX - rect.left;
+        mouse_y = e.clientY - rect.top;
+        mouse_down_state = true;
+        mouse_clicked_state = true;
+        if (typeof _on_mouse_down === 'function') _on_mouse_down('left');
+    });
+
+    window.addEventListener('mouseup', (e) => {
+        mouse_down_state = false;
+        if (typeof _on_mouse_up === 'function') _on_mouse_up('left');
+    });
+
+    // Initialize setup
+    if (typeof _setup === 'function') {
+        _setup();
+    }
+
+    let lastTime = performance.now();
+    function gameLoop(now) {
+        delta = Math.min((now - lastTime) / 1000, 0.1);
+        lastTime = now;
+        frame++;
+
+        if (typeof _update === 'function') {
+            _update();
+        }
+        if (typeof _draw === 'function') {
+            _draw();
+        }
+
+        _keys_pressed.clear();
+        mouse_clicked_state = false;
+        requestAnimationFrame(gameLoop);
+    }
+
+    requestAnimationFrame(gameLoop);
+});
+    </script>
+</body>
+</html>

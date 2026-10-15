@@ -1,0 +1,154 @@
+// ============================================
+// CodeLan Example: Classic Retro Pong
+// Controls: W / S or Up / Down to move paddle
+// Space to restart
+// ============================================
+
+let paddle_w = 16
+let paddle_h = 90
+let p1_x = 30
+let p1_y = 250
+let p2_x = 754
+let p2_y = 250
+let paddle_speed = 7
+
+let ball_x = 400
+let ball_y = 300
+let ball_r = 10
+let ball_vx = 5
+let ball_vy = 3
+
+let score1 = 0
+let score2 = 0
+let game_state = "playing" // "playing" or "game_over"
+
+fn reset_ball(direction) {
+    ball_x = width / 2
+    ball_y = height / 2
+    ball_vx = 5 * direction
+    ball_vy = random(-3, 3)
+}
+
+setup {
+    window("CodeLan Pong", 800, 600)
+    fps(60)
+    reset_ball(1)
+}
+
+update {
+    if (game_state == "playing") {
+        // Player 1 controls (W/S or Up/Down)
+        if (key("w") or key("up")) {
+            p1_y -= paddle_speed
+        }
+        if (key("s") or key("down")) {
+            p1_y += paddle_speed
+        }
+
+        // Clamp Player 1 paddle within screen
+        p1_y = clamp(p1_y, 10, height - paddle_h - 10)
+
+        // Simple smooth AI for Player 2
+        let target_y = ball_y - paddle_h / 2
+        if (p2_y < target_y - 10) {
+            p2_y += 5.5
+        } else if (p2_y > target_y + 10) {
+            p2_y -= 5.5
+        }
+        p2_y = clamp(p2_y, 10, height - paddle_h - 10)
+
+        // Ball movement
+        ball_x += ball_vx
+        ball_y += ball_vy
+
+        // Ball bounce off top and bottom walls
+        if (ball_y - ball_r <= 0) {
+            ball_y = ball_r
+            ball_vy = -ball_vy
+            sound("hit")
+        }
+        if (ball_y + ball_r >= height) {
+            ball_y = height - ball_r
+            ball_vy = -ball_vy
+            sound("hit")
+        }
+
+        // Paddle 1 collision
+        if (collide_rect(p1_x, p1_y, paddle_w, paddle_h, ball_x - ball_r, ball_y - ball_r, ball_r * 2, ball_r * 2) and ball_vx < 0) {
+            ball_vx = -ball_vx * 1.06 // Speed up slightly!
+            let offset = (ball_y - (p1_y + paddle_h / 2)) / (paddle_h / 2)
+            ball_vy = offset * 6
+            sound("laser")
+        }
+
+        // Paddle 2 collision
+        if (collide_rect(p2_x, p2_y, paddle_w, paddle_h, ball_x - ball_r, ball_y - ball_r, ball_r * 2, ball_r * 2) and ball_vx > 0) {
+            ball_vx = -ball_vx * 1.06
+            let offset = (ball_y - (p2_y + paddle_h / 2)) / (paddle_h / 2)
+            ball_vy = offset * 6
+            sound("laser")
+        }
+
+        // Scoring
+        if (ball_x < -20) {
+            score2 += 1
+            sound("coin")
+            reset_ball(1)
+        }
+        if (ball_x > width + 20) {
+            score1 += 1
+            sound("coin")
+            reset_ball(-1)
+        }
+
+        // Win check
+        if (score1 >= 7 or score2 >= 7) {
+            game_state = "game_over"
+            sound("gameover")
+        }
+    } else {
+        if (key("space")) {
+            score1 = 0
+            score2 = 0
+            game_state = "playing"
+            reset_ball(1)
+        }
+    }
+}
+
+draw {
+    // Background
+    clear("#0e111a")
+
+    // Center dividing dashed line
+    let seg_y = 10
+    while (seg_y < height) {
+        rect(width / 2 - 2, seg_y, 4, 15, "#1f2738")
+        seg_y += 30
+    }
+
+    // Paddles
+    rect(p1_x, p1_y, paddle_w, paddle_h, "#00e5ff")
+    rect(p2_x, p2_y, paddle_w, paddle_h, "#ff3366")
+
+    // Ball
+    circle(ball_x, ball_y, ball_r, "#ffffff")
+
+    // Scores
+    text(score1, width / 2 - 80, 50, 48, "#00e5ff", "center")
+    text(score2, width / 2 + 80, 50, 48, "#ff3366", "center")
+
+    // Hints
+    text("PLAYER (W/S)", 120, 30, 14, "#667799", "center")
+    text("CPU", width - 120, 30, 14, "#667799", "center")
+
+    if (game_state == "game_over") {
+        rect(150, 180, 500, 240, "#151828", "#334466", 2)
+        let winner = "PLAYER 1 WINS!"
+        if (score2 >= 7) {
+            winner = "CPU WINS!"
+        }
+        text_centered(winner, width / 2, 250, 36, "#ffdd00")
+        text_centered("Press SPACE to Play Again", width / 2, 330, 18, "#ffffff")
+    }
+}

@@ -1,0 +1,161 @@
+// ============================================
+// CodeLan Example: Classic Snake Game
+// Controls: Arrow keys or WASD to navigate
+// Space to restart
+// ============================================
+
+let grid_size = 20
+let cols = 30
+let rows = 25
+
+let snake = []
+let dir_x = 1
+let dir_y = 0
+let next_dir_x = 1
+let next_dir_y = 0
+
+let food_x = 10
+let food_y = 10
+let score = 0
+let high_score = 0
+let game_over = false
+let move_timer = 0
+let move_interval = 0.09 // Move every 90ms for smooth arcade feel
+
+fn spawn_food() {
+    food_x = random(1, cols - 2)
+    food_y = random(1, rows - 2)
+}
+
+fn reset_game() {
+    snake = [
+        { x: 10, y: 12 },
+        { x: 9, y: 12 },
+        { x: 8, y: 12 }
+    ]
+    dir_x = 1
+    dir_y = 0
+    next_dir_x = 1
+    next_dir_y = 0
+    score = 0
+    game_over = false
+    spawn_food()
+}
+
+setup {
+    window("CodeLan Snake", cols * grid_size, rows * grid_size)
+    fps(60)
+    reset_game()
+}
+
+update {
+    if (not game_over) {
+        // Controls
+        if ((key("left") or key("a")) and dir_x == 0) {
+            next_dir_x = -1
+            next_dir_y = 0
+        }
+        if ((key("right") or key("d")) and dir_x == 0) {
+            next_dir_x = 1
+            next_dir_y = 0
+        }
+        if ((key("up") or key("w")) and dir_y == 0) {
+            next_dir_x = 0
+            next_dir_y = -1
+        }
+        if ((key("down") or key("s")) and dir_y == 0) {
+            next_dir_x = 0
+            next_dir_y = 1
+        }
+
+        move_timer += delta
+        if (move_timer >= move_interval) {
+            move_timer = 0
+            dir_x = next_dir_x
+            dir_y = next_dir_y
+
+            let head = snake[0]
+            let new_head = { x: head.x + dir_x, y: head.y + dir_y }
+
+            // Wall collisions
+            if (new_head.x < 0 or new_head.x >= cols or new_head.y < 0 or new_head.y >= rows) {
+                game_over = true
+                sound("hit")
+                sound("gameover")
+                return
+            }
+
+            // Self collision
+            for (seg in snake) {
+                if (seg.x == new_head.x and seg.y == new_head.y) {
+                    game_over = true
+                    sound("hit")
+                    sound("gameover")
+                    return
+                }
+            }
+
+            // Insert new head at front
+            let new_snake = [new_head]
+            for (seg in snake) {
+                push(new_snake, seg)
+            }
+
+            // Check food collision
+            if (new_head.x == food_x and new_head.y == food_y) {
+                score += 10
+                if (score > high_score) {
+                    high_score = score
+                }
+                sound("coin")
+                spawn_food()
+            } else {
+                pop(new_snake) // remove tail if food not eaten
+            }
+
+            snake = new_snake
+        }
+    } else {
+        if (key("space")) {
+            reset_game()
+            sound("powerup")
+        }
+    }
+}
+
+draw {
+    // Background & subtle grid
+    clear("#10131d")
+    grid(grid_size, "#161b2a")
+
+    // Draw Food (glowing apple)
+    circle(food_x * grid_size + grid_size / 2, food_y * grid_size + grid_size / 2, grid_size / 2 - 2, "#ff3355")
+
+    // Draw Snake
+    let idx = 0
+    for (seg in snake) {
+        let x = seg.x * grid_size + 1
+        let y = seg.y * grid_size + 1
+        let sz = grid_size - 2
+        if (idx == 0) {
+            rect(x, y, sz, sz, "#00ff88") // Head
+            // Draw cute little eyes on head
+            circle(x + sz * 0.35, y + sz * 0.35, 2, "#10131d")
+            circle(x + sz * 0.65, y + sz * 0.35, 2, "#10131d")
+        } else {
+            rect(x, y, sz, sz, "#00bb66") // Body
+        }
+        idx += 1
+    }
+
+    // Score HUD bar
+    rect(0, 0, width, 32, "#0a0c14")
+    text("SCORE: " + score, 15, 16, 14, "#00ff88")
+    text("BEST: " + high_score, width - 15, 16, 14, "#ffdd00", "right")
+
+    if (game_over) {
+        rect(80, 160, width - 160, 180, "#151828", "#ff3355", 2)
+        text_centered("GAME OVER", width / 2, 220, 36, "#ff3355")
+        text_centered("Press SPACE to Restart", width / 2, 280, 16, "#ffffff")
+    }
+}

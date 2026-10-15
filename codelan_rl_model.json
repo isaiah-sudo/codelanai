@@ -1,0 +1,3467 @@
+{
+  "total_episodes": 25,
+  "total_reward_lifetime": 3291.0,
+  "epsilon": 0.1207,
+  "genre_weights": {
+    "pong": 10.0,
+    "snake": 10.0,
+    "space_shooter": 10.0,
+    "flappy": 10.0,
+    "breakout": 10.0,
+    "asteroid_dodger": 10.0,
+    "platformer": 10.0,
+    "clicker": 10.0,
+    "custom": 10.0
+  },
+  "feature_weights": {
+    "sound_effects": 15.0,
+    "smooth_controls": 15.0,
+    "score_display": 15.0,
+    "particles": 12.0,
+    "collision_audio": 14.0,
+    "high_score": 10.0,
+    "procedural_speed": 10.0
+  },
+  "q_table": {
+    "lifecycle_structure": {
+      "full_three_tier": 25.0,
+      "missing_draw": -20.0,
+      "missing_update": -20.0,
+      "missing_setup": -20.0
+    },
+    "drawing_paradigm": {
+      "clear_and_shapes": 20.0,
+      "unbuffered_draw": -10.0
+    },
+    "audio_trigger": {
+      "procedural_sound": 15.0,
+      "missing_audio": 2.0
+    },
+    "genre_platformer": {
+      "standard_lifecycle": 22.65
+    },
+    "genre_space_shooter": {
+      "standard_lifecycle": 69.037
+    },
+    "genre_pong": {
+      "syntax_flaw": 31.357
+    },
+    "genre_snake": {
+      "syntax_flaw": 39.359,
+      "standard_lifecycle": 23.55
+    },
+    "genre_flappy": {
+      "standard_lifecycle": 61.355
+    },
+    "genre_clicker": {
+      "syntax_flaw": 25.53,
+      "standard_lifecycle": 40.793
+    },
+    "genre_custom": {
+      "standard_lifecycle": 45.787
+    },
+    "genre_asteroid_dodger": {
+      "standard_lifecycle": 62.512
+    }
+  },
+  "history": [
+    {
+      "episode": 1,
+      "prompt": "Create a vertical platformer where player bounces higher and higher",
+      "genre": "platformer",
+      "reward": 151.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "clear",
+        "collide_rect",
+        "floor",
+        "fps",
+        "key",
+        "key_down",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "text_centered",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'floor()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('jump')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Collision detection & physics logic present",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [],
+      "syntax_error": null
+    },
+    {
+      "episode": 2,
+      "prompt": "Make a retro space shooter with laser sounds and exploding aliens",
+      "genre": "space_shooter",
+      "reward": 170.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "circle",
+        "clamp",
+        "clear",
+        "collide_rect",
+        "fps",
+        "key",
+        "key_down",
+        "push",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "text_centered",
+        "triangle",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clamp()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'triangle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('laser')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('explosion')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('explosion')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Collision detection & physics logic present",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [],
+      "syntax_error": null
+    },
+    {
+      "episode": 3,
+      "prompt": "Create a 2-player neon pong game with bouncing ball and paddle sounds",
+      "genre": "pong",
+      "reward": 113.0,
+      "is_valid_syntax": false,
+      "matched_builtins": [
+        "abs",
+        "circle",
+        "clamp",
+        "clear",
+        "fps",
+        "key",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'abs()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clamp()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('hit')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('hit')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('hit')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Collision detection & physics logic present",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [
+        {
+          "reason": "Syntax Error (Lexer): Lexer Error at 28:36: Unexpected character: '?'",
+          "points": -30.0
+        }
+      ],
+      "syntax_error": "Lexer Error: Lexer Error at 28:36: Unexpected character: '?'"
+    },
+    {
+      "episode": 4,
+      "prompt": "Fast paced space battle with boss shields and lasers",
+      "genre": "space_shooter",
+      "reward": 170.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "circle",
+        "clamp",
+        "clear",
+        "collide_rect",
+        "fps",
+        "key",
+        "key_down",
+        "push",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "text_centered",
+        "triangle",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clamp()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'triangle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('laser')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('explosion')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('explosion')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Collision detection & physics logic present",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [],
+      "syntax_error": null
+    },
+    {
+      "episode": 5,
+      "prompt": "Make a cyber snake game that eats glowing food pellets",
+      "genre": "snake",
+      "reward": 102.0,
+      "is_valid_syntax": false,
+      "matched_builtins": [
+        "circle",
+        "clear",
+        "floor",
+        "fps",
+        "key",
+        "key_down",
+        "pop",
+        "push",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "text_centered",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'floor()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'pop()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('gameover')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('gameover')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [
+        {
+          "reason": "Syntax Error (Lexer): Lexer Error at 130:25: Unexpected character: '?'",
+          "points": -30.0
+        }
+      ],
+      "syntax_error": "Lexer Error: Lexer Error at 130:25: Unexpected character: '?'"
+    },
+    {
+      "episode": 6,
+      "prompt": "Make a cyber snake game that eats glowing food pellets",
+      "genre": "snake",
+      "reward": 102.0,
+      "is_valid_syntax": false,
+      "matched_builtins": [
+        "circle",
+        "clear",
+        "floor",
+        "fps",
+        "key",
+        "key_down",
+        "pop",
+        "push",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "text_centered",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'floor()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'pop()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('gameover')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('gameover')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [
+        {
+          "reason": "Syntax Error (Lexer): Lexer Error at 130:25: Unexpected character: '?'",
+          "points": -30.0
+        }
+      ],
+      "syntax_error": "Lexer Error: Lexer Error at 130:25: Unexpected character: '?'"
+    },
+    {
+      "episode": 7,
+      "prompt": "Build a flappy bird game with gravity and pipe obstacles",
+      "genre": "flappy",
+      "reward": 159.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "circle",
+        "clear",
+        "fps",
+        "key_down",
+        "mouse_clicked",
+        "push",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "text_centered",
+        "triangle",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'mouse_clicked()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'triangle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('jump')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('hit')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('hit')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [],
+      "syntax_error": null
+    },
+    {
+      "episode": 8,
+      "prompt": "Click on fast disappearing targets for high score",
+      "genre": "clicker",
+      "reward": 92.0,
+      "is_valid_syntax": false,
+      "matched_builtins": [
+        "circle",
+        "clear",
+        "collide_point_circle",
+        "floor",
+        "fps",
+        "key_down",
+        "line",
+        "mouse_clicked",
+        "push",
+        "random",
+        "sound",
+        "text",
+        "text_centered",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_point_circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'floor()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'line()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'mouse_clicked()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [
+        {
+          "reason": "Syntax Error (Lexer): Lexer Error at 18:37: Unexpected character: '?'",
+          "points": -30.0
+        }
+      ],
+      "syntax_error": "Lexer Error: Lexer Error at 18:37: Unexpected character: '?'"
+    },
+    {
+      "episode": 9,
+      "prompt": "Universal arcade orb collector with roaming hazards",
+      "genre": "custom",
+      "reward": 165.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "circle",
+        "clamp",
+        "clear",
+        "collide_circle",
+        "collide_rect",
+        "fps",
+        "key",
+        "key_down",
+        "push",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "text_centered",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clamp()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('hit')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Collision detection & physics logic present",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [],
+      "syntax_error": null
+    },
+    {
+      "episode": 10,
+      "prompt": "Build a flappy bird game with gravity and pipe obstacles",
+      "genre": "flappy",
+      "reward": 159.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "circle",
+        "clear",
+        "fps",
+        "key_down",
+        "mouse_clicked",
+        "push",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "text_centered",
+        "triangle",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'mouse_clicked()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'triangle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('jump')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('hit')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('hit')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [],
+      "syntax_error": null
+    },
+    {
+      "episode": 11,
+      "prompt": "Build a flappy bird game with gravity and pipe obstacles",
+      "genre": "flappy",
+      "reward": 159.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "circle",
+        "clear",
+        "fps",
+        "key_down",
+        "mouse_clicked",
+        "push",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "text_centered",
+        "triangle",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'mouse_clicked()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'triangle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('jump')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('hit')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('hit')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [],
+      "syntax_error": null
+    },
+    {
+      "episode": 12,
+      "prompt": "Create a 2-player neon pong game with bouncing ball and paddle sounds",
+      "genre": "pong",
+      "reward": 113.0,
+      "is_valid_syntax": false,
+      "matched_builtins": [
+        "abs",
+        "circle",
+        "clamp",
+        "clear",
+        "fps",
+        "key",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'abs()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clamp()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('hit')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('hit')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('hit')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Collision detection & physics logic present",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [
+        {
+          "reason": "Syntax Error (Lexer): Lexer Error at 28:36: Unexpected character: '?'",
+          "points": -30.0
+        }
+      ],
+      "syntax_error": "Lexer Error: Lexer Error at 28:36: Unexpected character: '?'"
+    },
+    {
+      "episode": 13,
+      "prompt": "Make a cyber snake game that eats glowing food pellets",
+      "genre": "snake",
+      "reward": 102.0,
+      "is_valid_syntax": false,
+      "matched_builtins": [
+        "circle",
+        "clear",
+        "floor",
+        "fps",
+        "key",
+        "key_down",
+        "pop",
+        "push",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "text_centered",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'floor()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'pop()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('gameover')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('gameover')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [
+        {
+          "reason": "Syntax Error (Lexer): Lexer Error at 130:25: Unexpected character: '?'",
+          "points": -30.0
+        }
+      ],
+      "syntax_error": "Lexer Error: Lexer Error at 130:25: Unexpected character: '?'"
+    },
+    {
+      "episode": 14,
+      "prompt": "Click on fast disappearing targets for high score",
+      "genre": "clicker",
+      "reward": 92.0,
+      "is_valid_syntax": false,
+      "matched_builtins": [
+        "circle",
+        "clear",
+        "collide_point_circle",
+        "floor",
+        "fps",
+        "key_down",
+        "line",
+        "mouse_clicked",
+        "push",
+        "random",
+        "sound",
+        "text",
+        "text_centered",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_point_circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'floor()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'line()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'mouse_clicked()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [
+        {
+          "reason": "Syntax Error (Lexer): Lexer Error at 18:37: Unexpected character: '?'",
+          "points": -30.0
+        }
+      ],
+      "syntax_error": "Lexer Error: Lexer Error at 18:37: Unexpected character: '?'"
+    },
+    {
+      "episode": 15,
+      "prompt": "Dodge falling asteroids with arrow keys and collect energy gems",
+      "genre": "asteroid_dodger",
+      "reward": 162.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "circle",
+        "clamp",
+        "clear",
+        "collide_circle",
+        "floor",
+        "fps",
+        "key",
+        "key_down",
+        "push",
+        "random",
+        "sound",
+        "text",
+        "text_centered",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clamp()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'floor()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('hit')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Collision detection & physics logic present",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [],
+      "syntax_error": null
+    },
+    {
+      "episode": 1,
+      "prompt": "Make a retro space shooter with laser sounds and exploding aliens",
+      "genre": "space_shooter",
+      "reward": 170.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "circle",
+        "clamp",
+        "clear",
+        "collide_rect",
+        "fps",
+        "key",
+        "key_down",
+        "push",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "text_centered",
+        "triangle",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clamp()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'triangle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('laser')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('explosion')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('explosion')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Collision detection & physics logic present",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [],
+      "syntax_error": null
+    },
+    {
+      "episode": 2,
+      "prompt": "Universal arcade orb collector with roaming hazards",
+      "genre": "custom",
+      "reward": 165.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "circle",
+        "clamp",
+        "clear",
+        "collide_circle",
+        "collide_rect",
+        "fps",
+        "key",
+        "key_down",
+        "push",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "text_centered",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clamp()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('hit')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Collision detection & physics logic present",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [],
+      "syntax_error": null
+    },
+    {
+      "episode": 3,
+      "prompt": "Fast paced space battle with boss shields and lasers",
+      "genre": "space_shooter",
+      "reward": -170.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "circle",
+        "clamp",
+        "clear",
+        "collide_rect",
+        "fps",
+        "key",
+        "key_down",
+        "push",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "text_centered",
+        "triangle",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clamp()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'triangle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('laser')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('explosion')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('explosion')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Collision detection & physics logic present",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [
+        {
+          "reason": "Hallucination: used non-CodeLan syntax 'var' (17x)",
+          "points": -340.0
+        }
+      ],
+      "syntax_error": null
+    },
+    {
+      "episode": 4,
+      "prompt": "Make a retro space shooter with laser sounds and exploding aliens",
+      "genre": "space_shooter",
+      "reward": 170.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "circle",
+        "clamp",
+        "clear",
+        "collide_rect",
+        "fps",
+        "key",
+        "key_down",
+        "push",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "text_centered",
+        "triangle",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clamp()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'triangle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('laser')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('explosion')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('explosion')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Collision detection & physics logic present",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [],
+      "syntax_error": null
+    },
+    {
+      "episode": 5,
+      "prompt": "Make a cyber snake game that eats glowing food pellets",
+      "genre": "snake",
+      "reward": 157.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "circle",
+        "clear",
+        "floor",
+        "fps",
+        "key",
+        "key_down",
+        "pop",
+        "push",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "text_centered",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'floor()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'pop()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('gameover')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('gameover')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [],
+      "syntax_error": null
+    },
+    {
+      "episode": 6,
+      "prompt": "Click on fast disappearing targets for high score",
+      "genre": "clicker",
+      "reward": 147.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "circle",
+        "clear",
+        "collide_point_circle",
+        "floor",
+        "fps",
+        "key_down",
+        "line",
+        "mouse_clicked",
+        "push",
+        "random",
+        "sound",
+        "text",
+        "text_centered",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_point_circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'floor()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'line()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'mouse_clicked()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [],
+      "syntax_error": null
+    },
+    {
+      "episode": 7,
+      "prompt": "Make a retro space shooter with laser sounds and exploding aliens",
+      "genre": "space_shooter",
+      "reward": 170.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "circle",
+        "clamp",
+        "clear",
+        "collide_rect",
+        "fps",
+        "key",
+        "key_down",
+        "push",
+        "random",
+        "rect",
+        "sound",
+        "text",
+        "text_centered",
+        "triangle",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clamp()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'rect()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'triangle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('laser')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('explosion')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('explosion')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Collision detection & physics logic present",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [],
+      "syntax_error": null
+    },
+    {
+      "episode": 8,
+      "prompt": "Dodge falling asteroids with arrow keys and collect energy gems",
+      "genre": "asteroid_dodger",
+      "reward": 162.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "circle",
+        "clamp",
+        "clear",
+        "collide_circle",
+        "floor",
+        "fps",
+        "key",
+        "key_down",
+        "push",
+        "random",
+        "sound",
+        "text",
+        "text_centered",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clamp()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'floor()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('hit')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Collision detection & physics logic present",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [],
+      "syntax_error": null
+    },
+    {
+      "episode": 9,
+      "prompt": "Click on fast disappearing targets for high score",
+      "genre": "clicker",
+      "reward": 147.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "circle",
+        "clear",
+        "collide_point_circle",
+        "floor",
+        "fps",
+        "key_down",
+        "line",
+        "mouse_clicked",
+        "push",
+        "random",
+        "sound",
+        "text",
+        "text_centered",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_point_circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'floor()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'line()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'mouse_clicked()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [],
+      "syntax_error": null
+    },
+    {
+      "episode": 10,
+      "prompt": "Dodge falling asteroids with arrow keys and collect energy gems",
+      "genre": "asteroid_dodger",
+      "reward": 162.0,
+      "is_valid_syntax": true,
+      "matched_builtins": [
+        "circle",
+        "clamp",
+        "clear",
+        "collide_circle",
+        "floor",
+        "fps",
+        "key",
+        "key_down",
+        "push",
+        "random",
+        "sound",
+        "text",
+        "text_centered",
+        "window"
+      ],
+      "rewards_breakdown": [
+        {
+          "reason": "Syntax Passed: AST compiled with zero errors",
+          "points": 25.0
+        },
+        {
+          "reason": "Lifecycle: 'setup { ... }' block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Setup: window() initialized",
+          "points": 5.0
+        },
+        {
+          "reason": "Setup: fps() frame rate set",
+          "points": 5.0
+        },
+        {
+          "reason": "Lifecycle: 'update { ... }' logic block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Lifecycle: 'draw { ... }' rendering block present",
+          "points": 10.0
+        },
+        {
+          "reason": "Draw: clear() background canvas call present",
+          "points": 5.0
+        },
+        {
+          "reason": "Language built-in verified: 'circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clamp()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'clear()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'collide_circle()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'floor()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'fps()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'key_down()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'push()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'random()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'sound()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'text_centered()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Language built-in verified: 'window()'",
+          "points": 3.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('hit')",
+          "points": 5.0
+        },
+        {
+          "reason": "Procedural 8-bit sound verified: sound('coin')",
+          "points": 5.0
+        },
+        {
+          "reason": "Gameplay: Interactive player input handling detected",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Collision detection & physics logic present",
+          "points": 10.0
+        },
+        {
+          "reason": "Gameplay: Score tracking and HUD text rendering present",
+          "points": 10.0
+        },
+        {
+          "reason": "Intent Satisfied: Audio effects included as requested",
+          "points": 10.0
+        }
+      ],
+      "punishments_breakdown": [],
+      "syntax_error": null
+    }
+  ],
+  "human_feedback_log": [],
+  "last_updated": "2026-10-14T13:52:36.520854"
+}
