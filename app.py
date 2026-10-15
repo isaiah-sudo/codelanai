@@ -110,6 +110,12 @@ class CodeLanAIHandler(BaseHTTPRequestHandler):
             self._send_json({"success": True, "stats": stats})
             return
 
+        # 3b. API: Real-Time Learning Curve
+        if path == "/api/curve":
+            curve = rl_agent.get_learning_curve()
+            self._send_json({"success": True, "curve": curve})
+            return
+
         # 4. API: Knowledge Base Summary
         if path == "/api/knowledge":
             summary = knowledge_base.get_summary()
@@ -153,9 +159,11 @@ class CodeLanAIHandler(BaseHTTPRequestHandler):
             report = evaluator.evaluate(code, intent_spec={"genre": intent.genre, "require_sound": intent.require_sound})
 
             # Record automated RL learning step
-            state_key = f"genre_{intent.genre}"
-            action_key = "standard_lifecycle" if report.is_valid_syntax else "syntax_flaw"
-            rl_agent.update_step(state_key, action_key, report.total_reward)
+            decisions = {
+                "syntax_action": "valid_codelan_let" if report.is_valid_syntax else "syntax_flaw",
+                "features": getattr(intent, "decisions", {})
+            }
+            rl_agent.update_from_trial(intent.genre, decisions, report)
 
             # Transpile to HTML for live playable canvas
             html_content = transpile_codelan_to_html(code, title=intent.title)

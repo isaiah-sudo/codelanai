@@ -31,11 +31,20 @@ An autonomous AI engine specialized in the **CodeLan** programming language (`.c
 
 ## 🚀 Quick Start
 
-### Option 1: Double-Click Launcher (Windows)
-Double-click **`launch.bat`** to start the web application and automatically open your default browser at `http://localhost:5050`.
+### Option 1: Double-Click Desktop Launcher (Windows)
+Double-click **`launch.bat`** to start the native **CodeLan AI Desktop Window** with full live learning visualizer and game studio.
 
-### Option 2: Run via Terminal
+### Option 2: Run Desktop Application via Terminal
 ```bash
+python main.py
+# or
+python desktop_app.py
+```
+
+### Option 3: Run Web Studio Dashboard
+```bash
+python main.py --web
+# or
 python app.py
 ```
 Then visit **`http://localhost:5050`** in your browser.

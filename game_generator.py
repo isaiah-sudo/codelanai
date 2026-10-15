@@ -27,6 +27,8 @@ class GameIntent:
         self.difficulty: str = "normal"
         self.controls: str = "arrows_or_wasd"
         self.custom_mechanics: List[str] = []
+        self.enable_screenshake: bool = False
+        self.decisions: Dict[str, Any] = {}
         self._parse()
 
     def _parse(self):
@@ -102,9 +104,50 @@ class CodeLanGameGenerator:
     def __init__(self, agent: CodeLanRLAgent = rl_agent):
         self.agent = agent
 
-    def generate_game(self, prompt: str) -> Tuple[str, GameIntent]:
-        """Generates CodeLan game code for a given prompt."""
+    def generate_game(
+        self,
+        prompt: str,
+        feature_overrides: Optional[Dict[str, bool]] = None
+    ) -> Tuple[str, GameIntent]:
+        """Generates CodeLan game code guided by RL policy weights and prompt."""
         intent = GameIntent(prompt)
+
+        # Consult RL policy for feature activation unless explicitly overridden
+        decisions = {}
+
+        req_sound = feature_overrides.get("sound_effects") if feature_overrides else None
+        if req_sound is not None:
+            intent.require_sound = req_sound
+            decisions["sound_effects"] = req_sound
+        else:
+            intent.require_sound, is_exp = self.agent.decide_feature(intent.genre, "sound_effects", intent.require_sound)
+            decisions["sound_effects"] = intent.require_sound
+
+        req_part = feature_overrides.get("particles") if feature_overrides else None
+        if req_part is not None:
+            intent.enable_particles = req_part
+            decisions["particles"] = req_part
+        else:
+            intent.enable_particles, is_exp = self.agent.decide_feature(intent.genre, "particles", intent.enable_particles)
+            decisions["particles"] = intent.enable_particles
+
+        req_hs = feature_overrides.get("high_score") if feature_overrides else None
+        if req_hs is not None:
+            intent.enable_highscore = req_hs
+            decisions["high_score"] = req_hs
+        else:
+            intent.enable_highscore, is_exp = self.agent.decide_feature(intent.genre, "high_score", intent.enable_highscore)
+            decisions["high_score"] = intent.enable_highscore
+
+        req_shake = feature_overrides.get("screenshake") if feature_overrides else None
+        if req_shake is not None:
+            intent.enable_screenshake = req_shake
+            decisions["screenshake"] = req_shake
+        else:
+            intent.enable_screenshake, is_exp = self.agent.decide_feature(intent.genre, "screenshake", False)
+            decisions["screenshake"] = intent.enable_screenshake
+
+        intent.decisions = decisions
 
         # Generate game code based on detected genre and intent
         if intent.genre == "pong":

@@ -9,8 +9,8 @@ echo.
 
 where python >nul 2>&1
 if %errorlevel% equ 0 (
-    echo [LAUNCHER] Starting via Python...
-    python app.py
+    echo [LAUNCHER] Starting CodeLan AI Desktop Studio...
+    python main.py
 ) else (
     echo [LAUNCHER] Python not found in PATH, launching standalone executable...
     start "" "dist\codelan_ai\codelan_ai.exe"

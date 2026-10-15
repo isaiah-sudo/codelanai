@@ -162,13 +162,16 @@ class CodeLanEvaluator:
         # ---------------------------------------------------------
         # 5. INTENT & GAMEPLAY MECHANICS REWARDS
         # ---------------------------------------------------------
+        # ---------------------------------------------------------
+        # 5. INTENT & GAMEPLAY MECHANICS REWARDS
+        # ---------------------------------------------------------
         # Controls check
         if "key(" in code or "key_down(" in code or "mouse_x" in code:
             report.game_mechanics.append("player_input")
             report.add_reward("Gameplay: Interactive player input handling detected", 10.0)
 
         # Collision detection check
-        if any(c in code for c in ["collide_rect", "collide_circle", "distance("]):
+        if any(c in code for c in ["collide_rect", "collide_circle", "distance(", "ball_x - ball_r"]):
             report.game_mechanics.append("collision_physics")
             report.add_reward("Gameplay: Collision detection & physics logic present", 10.0)
 
@@ -177,17 +180,34 @@ class CodeLanEvaluator:
             report.game_mechanics.append("score_tracking")
             report.add_reward("Gameplay: Score tracking and HUD text rendering present", 10.0)
 
+        # Visual FX & Juice (Particles, Screenshake)
+        if "particles" in code and "circle(" in code:
+            report.game_mechanics.append("particles")
+            report.add_reward("Visual Juice: Particle system logic detected", 8.0)
+
+        if any(k in code for k in ["shake", "camera("]):
+            report.game_mechanics.append("screenshake")
+            report.add_reward("Visual Juice: Screen shake / camera offset detected", 5.0)
+
+        if any(k in code for k in ["high_score", "best_score", "highscore"]):
+            report.game_mechanics.append("high_score")
+            report.add_reward("Gameplay: High score persistence detected", 6.0)
+
         # Intent-specific verification
         if intent_spec:
-            if intent_spec.get("require_sound") and not ("sound(" in code or "beep(" in code):
+            if intent_spec.get("require_sound") is True and not ("sound(" in code or "beep(" in code):
                 report.add_punishment("Intent Violation: Sound was requested but not implemented", 15.0)
-            if intent_spec.get("require_sound") and ("sound(" in code or "beep(" in code):
+            if intent_spec.get("require_sound") is True and ("sound(" in code or "beep(" in code):
                 report.add_reward("Intent Satisfied: Audio effects included as requested", 10.0)
 
             if intent_spec.get("genre") and intent_spec.get("genre") != "custom":
                 genre = intent_spec["genre"]
-                if genre in ["space", "shooter"] and not ("ship" in code or "bullet" in code or "alien" in code or "enemy" in code):
-                    report.add_punishment("Intent Weakness: Missing space shooter entities (ship, bullets, enemies)", 10.0)
+                if genre == "space_shooter" and not any(k in code for k in ["ship", "bullet", "alien", "laser"]):
+                    report.add_punishment("Intent Weakness: Missing space shooter entities (ship, bullets, aliens)", 10.0)
+                elif genre == "pong" and not any(k in code for k in ["paddle", "ball", "p1_score"]):
+                    report.add_punishment("Intent Weakness: Missing pong mechanics (paddle, ball, score)", 10.0)
+                elif genre == "snake" and not any(k in code for k in ["snake", "food", "body", "tail"]):
+                    report.add_punishment("Intent Weakness: Missing snake mechanics (snake, food)", 10.0)
 
         return report
 
@@ -205,10 +225,10 @@ class CodeLanRLAgent:
 
         # RL Hyperparameters
         self.alpha: float = 0.15     # Learning rate
-        self.gamma: float = 0.90     # Discount factor
+        self.gamma: float = 0.85     # Discount factor
         self.epsilon: float = 0.20   # Exploration rate
         self.min_epsilon: float = 0.05
-        self.epsilon_decay: float = 0.98
+        self.epsilon_decay: float = 0.985
 
         # State-Action Q-Table & Policy weights
         self.q_table: Dict[str, Dict[str, float]] = {}
@@ -235,8 +255,8 @@ class CodeLanRLAgent:
                     self.total_episodes = data.get("total_episodes", 0)
                     self.total_reward_lifetime = data.get("total_reward_lifetime", 0.0)
                     self.epsilon = data.get("epsilon", self.epsilon)
-                    self.history = data.get("history", [])[-200:]
-                    self.human_feedback_log = data.get("human_feedback_log", [])[-50:]
+                    self.history = data.get("history", [])[-300:]
+                    self.human_feedback_log = data.get("human_feedback_log", [])[-100:]
                     print(f"[RL Agent] Loaded model with {self.total_episodes} episodes, lifetime reward {self.total_reward_lifetime:.1f}")
                     return
             except Exception as e:
@@ -247,26 +267,24 @@ class CodeLanRLAgent:
     def _initialize_defaults(self):
         """Initializes default Q-table and feature preference weights."""
         self.genre_weights = {
-            "pong": 10.0,
-            "snake": 10.0,
-            "space_shooter": 10.0,
-            "flappy": 10.0,
-            "breakout": 10.0,
-            "asteroid_dodger": 10.0,
-            "platformer": 10.0,
+            "pong": 12.0,
+            "snake": 12.0,
+            "space_shooter": 15.0,
+            "flappy": 12.0,
+            "breakout": 14.0,
+            "asteroid_dodger": 12.0,
+            "platformer": 12.0,
             "clicker": 10.0,
             "custom": 10.0
         }
         self.feature_weights = {
-            "sound_effects": 15.0,
+            "sound_effects": 20.0,
+            "particles": 15.0,
+            "high_score": 12.0,
+            "screenshake": 10.0,
             "smooth_controls": 15.0,
-            "score_display": 15.0,
-            "particles": 12.0,
-            "collision_audio": 14.0,
-            "high_score": 10.0,
-            "procedural_speed": 10.0
+            "collision_audio": 15.0
         }
-        # Initial Q-values for syntax decisions
         self.q_table = {
             "lifecycle_structure": {
                 "full_three_tier": 25.0,
@@ -274,16 +292,76 @@ class CodeLanRLAgent:
                 "missing_update": -20.0,
                 "missing_setup": -20.0
             },
-            "drawing_paradigm": {
-                "clear_and_shapes": 20.0,
-                "unbuffered_draw": -10.0
+            "syntax_discipline": {
+                "valid_codelan_let": 25.0,
+                "foreign_var": -30.0,
+                "foreign_func": -30.0
             },
-            "audio_trigger": {
-                "procedural_sound": 15.0,
-                "missing_audio": 2.0
+            "feature_particles": {
+                "enabled": 18.0,
+                "disabled": 5.0
+            },
+            "feature_sound_effects": {
+                "enabled": 22.0,
+                "disabled": 2.0
+            },
+            "feature_high_score": {
+                "enabled": 14.0,
+                "disabled": 8.0
+            },
+            "feature_screenshake": {
+                "enabled": 12.0,
+                "disabled": 8.0
             }
         }
+        self.total_episodes = 0
+        self.total_reward_lifetime = 0.0
+        self.history = []
+        self.human_feedback_log = []
         self.save()
+
+    def reset_weights(self):
+        """Resets the RL model back to pristine initial state."""
+        with self.lock:
+            self._initialize_defaults()
+
+    def choose_action(self, state_key: str, available_actions: List[str]) -> Tuple[str, bool]:
+        """
+        Epsilon-greedy action selection.
+        Returns (chosen_action, is_exploration).
+        """
+        with self.lock:
+            if not available_actions:
+                return "", False
+
+            # Exploration
+            if random.random() < self.epsilon:
+                return random.choice(available_actions), True
+
+            # Exploitation: pick action with maximum Q-value
+            if state_key not in self.q_table:
+                self.q_table[state_key] = {}
+
+            state_q = self.q_table[state_key]
+            best_action = max(available_actions, key=lambda a: state_q.get(a, 0.0))
+            return best_action, False
+
+    def decide_feature(self, genre: str, feature_name: str, requested: Optional[bool] = None) -> Tuple[bool, bool]:
+        """
+        Decides whether to enable a gameplay feature using RL policy.
+        If requested is explicitly specified by user (not None), it weighs heavily.
+        Returns (is_enabled, is_exploration).
+        """
+        if requested is not None:
+            return bool(requested), False
+
+        state_key = f"feat_{genre}_{feature_name}"
+        if state_key not in self.q_table:
+            # Fall back to general feature state
+            state_key = f"feature_{feature_name}"
+
+        action, is_explore = self.choose_action(state_key, ["enabled", "disabled"])
+        return (action == "enabled"), is_explore
 
     def save(self):
         """Persists model state to disk."""
@@ -294,8 +372,8 @@ class CodeLanRLAgent:
             "genre_weights": self.genre_weights,
             "feature_weights": self.feature_weights,
             "q_table": self.q_table,
-            "history": self.history[-200:],
-            "human_feedback_log": self.human_feedback_log[-50:],
+            "history": self.history[-300:],
+            "human_feedback_log": self.human_feedback_log[-100:],
             "last_updated": datetime.now().isoformat()
         }
         try:
@@ -306,7 +384,7 @@ class CodeLanRLAgent:
 
     def update_step(self, state_key: str, action_key: str, reward: float):
         """
-        Q-learning trial-and-error update:
+        Single Q-learning trial-and-error update:
         Q(s, a) = Q(s, a) + alpha * (reward - Q(s, a))
         """
         with self.lock:
@@ -323,6 +401,73 @@ class CodeLanRLAgent:
             self.total_episodes += 1
             self.total_reward_lifetime += reward
 
+    def update_from_trial(self, genre: str, decisions: Dict[str, Any], report: EvaluationReport):
+        """
+        Multi-dimensional reinforcement learning attribution update.
+        Attributes specific rewards/punishments to the corresponding Q-states.
+        """
+        with self.lock:
+            # 1. Syntax discipline
+            syntax_action = decisions.get("syntax_action", "valid_codelan_let")
+            syntax_reward = 25.0 if report.is_valid_syntax else -30.0
+            self._update_q_raw("syntax_discipline", syntax_action, syntax_reward)
+
+            # 2. Lifecycle structure
+            lifecycle_count = len(report.matched_lifecycle)
+            if lifecycle_count == 3:
+                self._update_q_raw("lifecycle_structure", "full_three_tier", 25.0)
+            else:
+                self._update_q_raw("lifecycle_structure", "partial_lifecycle", -20.0)
+
+            # 3. Features attribution
+            features_dict = decisions.get("features", {})
+            for feat_name, is_enabled in features_dict.items():
+                state_key = f"feat_{genre}_{feat_name}"
+                act = "enabled" if is_enabled else "disabled"
+                
+                # Check if feature contributed positive points
+                feat_points = 0.0
+                if is_enabled:
+                    if feat_name == "particles" and "particles" in report.game_mechanics:
+                        feat_points = 10.0
+                    elif feat_name == "sound_effects" and report.matched_builtins:
+                        feat_points = 12.0
+                    elif feat_name == "screenshake" and "screenshake" in report.game_mechanics:
+                        feat_points = 8.0
+                    elif feat_name == "high_score" and "high_score" in report.game_mechanics:
+                        feat_points = 8.0
+                    else:
+                        feat_points = 2.0
+                else:
+                    feat_points = 0.0
+
+                self._update_q_raw(state_key, act, feat_points)
+
+                # Update global feature weight
+                if feat_name in self.feature_weights:
+                    delta = (feat_points - 3.0) * 0.1
+                    self.feature_weights[feat_name] = round(max(2.0, self.feature_weights[feat_name] + delta), 2)
+
+            # 4. Genre policy weight
+            if genre in self.genre_weights:
+                reward_factor = 0.1 if report.is_valid_syntax else -0.2
+                self.genre_weights[genre] = round(max(2.0, self.genre_weights[genre] + report.total_reward * reward_factor * 0.05), 2)
+
+            # 5. Decay epsilon
+            if self.epsilon > self.min_epsilon:
+                self.epsilon = max(self.min_epsilon, self.epsilon * self.epsilon_decay)
+
+            self.total_episodes += 1
+            self.total_reward_lifetime += report.total_reward
+
+    def _update_q_raw(self, state_key: str, action_key: str, reward: float):
+        """Internal helper to update Q-table without incrementing global episodes."""
+        if state_key not in self.q_table:
+            self.q_table[state_key] = {}
+        current_q = self.q_table[state_key].get(action_key, 0.0)
+        new_q = current_q + self.alpha * (reward - current_q)
+        self.q_table[state_key][action_key] = round(new_q, 3)
+
     def record_human_feedback(self, game_genre: str, reward_points: float, note: str = ""):
         """
         Records human reinforcement (reward/punishment) directly into policy weights.
@@ -330,12 +475,16 @@ class CodeLanRLAgent:
         with self.lock:
             # Update genre weight
             if game_genre in self.genre_weights:
-                self.genre_weights[game_genre] = max(1.0, self.genre_weights[game_genre] + reward_points * 0.5)
+                self.genre_weights[game_genre] = max(1.0, round(self.genre_weights[game_genre] + reward_points * 0.5, 2))
 
-            # Update general Q-learning state
+            # Update Q-values for this genre
             state_key = f"human_feedback_{game_genre}"
-            action_key = "generation_quality"
-            self.update_step(state_key, action_key, reward_points)
+            self._update_q_raw(state_key, "generation_quality", reward_points)
+
+            # If rewarded, boost features
+            feedback_mult = 0.2 if reward_points > 0 else -0.3
+            for f in self.feature_weights:
+                self.feature_weights[f] = max(2.0, round(self.feature_weights[f] + feedback_mult, 2))
 
             feedback_record = {
                 "timestamp": datetime.now().isoformat(),
@@ -369,6 +518,30 @@ class CodeLanRLAgent:
                 "human_feedback_count": len(self.human_feedback_log)
             }
 
+    def get_learning_curve(self, max_points: int = 100) -> Dict[str, Any]:
+        """Returns historical data points for real-time learning curve plotting."""
+        with self.lock:
+            entries = self.history[-max_points:] if self.history else []
+            episodes = []
+            rewards = []
+            rolling_avg = []
+            running_sum = 0.0
+
+            for idx, item in enumerate(entries):
+                ep = item.get("episode", idx + 1)
+                rew = float(item.get("reward", 0.0))
+                episodes.append(ep)
+                rewards.append(rew)
+                running_sum += rew
+                rolling_avg.append(round(running_sum / (idx + 1), 2))
+
+            return {
+                "episodes": episodes,
+                "rewards": rewards,
+                "rolling_avg": rolling_avg
+            }
+
 
 # Global RL Agent singleton
 rl_agent = CodeLanRLAgent()
+
